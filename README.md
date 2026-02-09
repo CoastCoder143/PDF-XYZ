@@ -54,15 +54,41 @@ python pdf_to_xyz.py input.pdf
 
 ## Installation
 
+### Quick Start (Automated)
+
+**Easiest way** - Use the installation script:
+```bash
+# Clone the repository
+git clone https://github.com/CoastCoder143/PDF-XYZ.git
+cd PDF-XYZ
+
+# Run automated installation
+chmod +x install.sh
+./install.sh
+```
+
+The script automatically:
+- Detects your operating system
+- Installs system dependencies
+- Creates a Python virtual environment
+- Installs all Python packages
+- Verifies the installation
+
+### Manual Installation
+
 ### Prerequisites
 
 1. **System Dependencies** (for Tesseract OCR):
    ```bash
-   # Ubuntu/Debian (Desktop)
+   # Ubuntu/Debian 22.04+ (Desktop)
+   sudo apt-get update
+   sudo apt-get install tesseract-ocr poppler-utils libgl1
+   
+   # Ubuntu/Debian 20.04 or older (Desktop)
    sudo apt-get update
    sudo apt-get install tesseract-ocr poppler-utils libgl1-mesa-glx
    
-   # Ubuntu/Debian (Server/Headless)
+   # Ubuntu/Debian (Server/Headless - any version)
    sudo apt-get update
    sudo apt-get install tesseract-ocr poppler-utils
    # Note: Use requirements-headless.txt for servers
@@ -84,7 +110,9 @@ python pdf_to_xyz.py input.pdf
    pip install -r requirements-headless.txt
    ```
 
-**Troubleshooting**: If you encounter "libGL.so.1" errors, see [BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md#opencv-libglso1-error-headless-environments) for solutions.
+**Troubleshooting**: 
+- If you get "Package 'libgl1-mesa-glx' has no installation candidate", you're on Ubuntu 22.04+ - use `libgl1` instead
+- If you encounter "libGL.so.1" errors, see [BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md#opencv-libglso1-error-headless-environments) for solutions
 
 ## Choosing the Right Tool
 

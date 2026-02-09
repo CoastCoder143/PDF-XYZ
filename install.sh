@@ -25,7 +25,23 @@ echo ""
 if [ "$OS" == "Linux" ]; then
     echo "Installing Tesseract OCR and Poppler..."
     sudo apt-get update
+    
+    # Install base packages
     sudo apt-get install -y tesseract-ocr poppler-utils
+    
+    # Try to install OpenGL libraries for desktop environments
+    # Use modern package names for Ubuntu 22.04+ or fallback to older names
+    echo "Installing OpenGL libraries (for desktop environments)..."
+    if sudo apt-get install -y libgl1 libglib2.0-0 2>/dev/null; then
+        echo "✓ Installed modern OpenGL packages (libgl1)"
+    elif sudo apt-get install -y libgl1-mesa-glx libglib2.0-0 2>/dev/null; then
+        echo "✓ Installed legacy OpenGL packages (libgl1-mesa-glx)"
+    else
+        echo "⚠ Could not install OpenGL libraries"
+        echo "  This is OK for headless/server environments"
+        echo "  You'll need to use requirements-headless.txt"
+    fi
+    
     echo "✓ System dependencies installed"
     
 elif [ "$OS" == "macOS" ]; then
@@ -82,7 +98,18 @@ echo ""
 python -c "import pytesseract; print('✓ Tesseract wrapper installed')" 2>/dev/null || echo "⚠ Tesseract wrapper not available"
 python -c "import easyocr; print('✓ EasyOCR installed')" 2>/dev/null || echo "⚠ EasyOCR not available"
 python -c "import paddleocr; print('✓ PaddleOCR installed')" 2>/dev/null || echo "⚠ PaddleOCR not available"
-python -c "import cv2; print('✓ OpenCV installed')" 2>/dev/null || echo "✗ OpenCV not available"
+
+# Check OpenCV installation
+if python -c "import cv2; print('✓ OpenCV installed')" 2>/dev/null; then
+    echo "✓ OpenCV installed successfully"
+else
+    echo "✗ OpenCV not available"
+    echo ""
+    echo "If you're on a headless server, install the headless version:"
+    echo "  pip uninstall opencv-python"
+    echo "  pip install opencv-python-headless"
+fi
+
 python -c "from pdf2image import convert_from_path; print('✓ pdf2image installed')" 2>/dev/null || echo "✗ pdf2image not available"
 
 echo ""
@@ -99,6 +126,9 @@ else
 fi
 echo "  2. Run the converter:"
 echo "     python pdf_to_xyz.py your_file.pdf"
+echo ""
+echo "For bathymetric survey digitization:"
+echo "     python bathymetry_digitizer.py --input survey.pdf --interactive-calib --outdir output/"
 echo ""
 echo "For more information, see README.md"
 echo ""

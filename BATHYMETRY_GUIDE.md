@@ -36,21 +36,36 @@ Digitizes scanned analogue hydrographic drawings containing dense numeric depth 
 
 ### Installation
 
-**Ubuntu/Debian** (Desktop):
+**Ubuntu/Debian** (Desktop) - Ubuntu 22.04 or newer:
 ```bash
 sudo apt-get update
-sudo apt-get install tesseract-ocr poppler-utils python3-tk libgl1-mesa-glx
+sudo apt-get install tesseract-ocr poppler-utils python3-tk libgl1 libglib2.0-0
 pip install -r requirements.txt
 ```
 
-**Ubuntu/Debian** (Server/Headless):
+**Ubuntu/Debian** (Desktop) - Ubuntu 20.04 or older:
+```bash
+sudo apt-get update
+sudo apt-get install tesseract-ocr poppler-utils python3-tk libgl1-mesa-glx libglib2.0-0
+pip install -r requirements.txt
+```
+
+**Ubuntu/Debian** (Server/Headless - any version):
 ```bash
 sudo apt-get update
 sudo apt-get install tesseract-ocr poppler-utils
-pip install -r requirements.txt
-# Then replace opencv-python with headless version:
-pip uninstall opencv-python
-pip install opencv-python-headless
+pip install -r requirements-headless.txt
+```
+
+**Automated Installation** (recommended):
+```bash
+# Clone the repository
+git clone https://github.com/CoastCoder143/PDF-XYZ.git
+cd PDF-XYZ
+
+# Run installation script (handles all dependencies automatically)
+chmod +x install.sh
+./install.sh
 ```
 
 **macOS**:
@@ -65,14 +80,25 @@ pip install -r requirements.txt
 3. Add both to PATH
 4. Install Python packages: `pip install -r requirements.txt`
 
-**Docker/Containers**:
-```bash
-# Add to Dockerfile before pip install
+**Docker/Containers** - Modern Ubuntu base:
+```dockerfile
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     poppler-utils \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+**Docker/Containers** - Older Ubuntu base or headless:
+```dockerfile
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+# Then use requirements-headless.txt
+```
+
     && rm -rf /var/lib/apt/lists/*
 ```
 Or use opencv-python-headless in requirements.txt
@@ -221,6 +247,44 @@ Transformation: `[X, Y] = affine_matrix × [px, py, 1]`
 
 ## Troubleshooting
 
+### Package 'libgl1-mesa-glx' has no installation candidate
+
+**Symptoms**: When trying to install system dependencies, you get an error like:
+```
+E: Package 'libgl1-mesa-glx' has no installation candidate
+```
+
+**Cause**: The package name changed in Ubuntu 22.04 and newer versions. The old package `libgl1-mesa-glx` was replaced with `libgl1`.
+
+**Solutions**:
+
+1. **For Ubuntu 22.04 or newer** (use modern package name):
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y libgl1 libglib2.0-0
+   ```
+
+2. **For Ubuntu 20.04 or older** (use legacy package name):
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y libgl1-mesa-glx libglib2.0-0
+   ```
+
+3. **Use the automated installation script** (recommended - handles both):
+   ```bash
+   chmod +x install.sh
+   ./install.sh
+   ```
+   
+   The script automatically detects your system and installs the correct packages.
+
+4. **For headless/server environments** (skip OpenGL entirely):
+   ```bash
+   sudo apt-get update
+   sudo apt-get install tesseract-ocr poppler-utils
+   pip install -r requirements-headless.txt
+   ```
+
 ### OpenCV libGL.so.1 Error (Headless Environments)
 
 **Symptoms**: Script fails with "libGL.so.1: cannot open shared object file: No such file or directory" or similar OpenCV library errors, even after installing opencv-python via pip.
@@ -240,17 +304,24 @@ Transformation: `[X, Y] = affine_matrix × [px, py, 1]`
    
    The headless version works without GUI libraries and is perfect for server environments.
 
-2. **For Desktop Linux** (if you need GUI features):
+2. **For Desktop Linux - Ubuntu 22.04+** (if you need GUI features):
    ```bash
-   # Ubuntu/Debian
+   sudo apt-get update
+   sudo apt-get install -y libgl1 libglib2.0-0 libsm6 libxext6 libxrender-dev
+   ```
+
+3. **For Desktop Linux - Ubuntu 20.04 or older** (if you need GUI features):
+   ```bash
    sudo apt-get update
    sudo apt-get install -y libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev
-   
-   # CentOS/RHEL/Fedora
+   ```
+
+4. **For CentOS/RHEL/Fedora**:
+   ```bash
    sudo yum install mesa-libGL
    ```
 
-3. **Temporary Workaround** (use environment variable):
+5. **Temporary Workaround** (use environment variable):
    ```bash
    export QT_QPA_PLATFORM=offscreen
    python bathymetry_digitizer.py --input survey.pdf ...
