@@ -1,14 +1,56 @@
 # PDF-XYZ
 
-Convert scanned PDF documents containing bathymetric data to XYZ format using advanced OCR technology.
+Advanced tools for digitizing bathymetric survey data from scanned documents.
 
-## Features
+## Tools Included
 
-- **Multiple OCR Engines**: Utilizes Tesseract, EasyOCR, and PaddleOCR for maximum accuracy
-- **Advanced Image Preprocessing**: Automatic denoising, deskewing, and thresholding
-- **Bathymetric Data Parsing**: Intelligently extracts X, Y, Z coordinates from various formats
-- **High DPI Support**: Configurable resolution for optimal text recognition
-- **Flexible Format Support**: Handles various coordinate formats and notations
+This repository contains two complementary tools for processing bathymetric data:
+
+### 1. Bathymetric Survey Digitizer (`bathymetry_digitizer.py`) ⭐ **Production-Ready**
+
+**Purpose**: Production-ready pipeline for digitizing scanned hydrographic charts with dense spot soundings into calibrated XYZ point clouds.
+
+**Key Features**:
+- **Interactive Calibration**: Ground control point selection with affine transformation
+- **Automated Processing**: Crops margins/title blocks, removes border lines  
+- **Advanced OCR**: Multi-mode Tesseract with confidence filtering
+- **Spatial Deduplication**: Clusters and filters duplicate detections
+- **Multiple Outputs**: XYZ, raw CSV, clean CSV, debug overlay
+- **Quality Control**: Comprehensive statistics and validation
+
+**Best For**: Professional hydrographic survey digitization, bathymetric mapping projects, GIS integration
+
+📖 **[Complete Guide →](BATHYMETRY_GUIDE.md)**
+
+**Quick Start**:
+```bash
+# Interactive calibration (first time)
+python bathymetry_digitizer.py --input survey.png --interactive-calib --outdir output/
+
+# Using saved calibration
+python bathymetry_digitizer.py --input survey.png --calib-json calibration.json --outdir results/
+```
+
+### 2. Simple PDF to XYZ Converter (`pdf_to_xyz.py`)
+
+**Purpose**: Basic converter for PDFs containing coordinate data in text format.
+
+**Key Features**:
+- **Multiple OCR Engines**: Tesseract, EasyOCR, and PaddleOCR
+- **Advanced Preprocessing**: Denoising, deskewing, thresholding
+- **Flexible Format Support**: Various coordinate notations
+- **High DPI Support**: Configurable resolution
+
+**Best For**: Quick conversions of PDFs with pre-formatted XYZ coordinates
+
+📖 **[Quick Start Guide →](QUICKSTART.md)**
+
+**Quick Start**:
+```bash
+python pdf_to_xyz.py input.pdf
+```
+
+---
 
 ## Installation
 
@@ -33,7 +75,46 @@ Convert scanned PDF documents containing bathymetric data to XYZ format using ad
    pip install -r requirements.txt
    ```
 
-## Usage
+## Choosing the Right Tool
+
+| Use Case | Recommended Tool |
+|----------|-----------------|
+| Professional hydrographic survey digitization | `bathymetry_digitizer.py` |
+| Scanned charts with spot soundings | `bathymetry_digitizer.py` |
+| Need georeferenced coordinates | `bathymetry_digitizer.py` |
+| Simple PDF with XYZ text | `pdf_to_xyz.py` |
+| Quick extraction without calibration | `pdf_to_xyz.py` |
+
+## Usage Examples
+
+### Bathymetric Survey Digitizer
+
+**First time (with interactive calibration)**:
+```bash
+python bathymetry_digitizer.py --input survey.png --interactive-calib --outdir output/
+```
+
+**Subsequent runs**:
+```bash
+python bathymetry_digitizer.py --input survey.png --calib-json output/calibration.json --outdir results/
+```
+
+**With custom parameters**:
+```bash
+python bathymetry_digitizer.py \
+    --input survey.pdf \
+    --calib-json calibration.json \
+    --outdir results/ \
+    --dpi 600 \
+    --min-depth 5 \
+    --max-depth 30 \
+    --crop-params 100,200,50,50 \
+    --debug
+```
+
+See [BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md) for complete documentation.
+
+### Simple PDF Converter
 
 ### Basic Usage
 
@@ -69,9 +150,11 @@ python pdf_to_xyz.py input.pdf -v
 - `--no-paddleocr`: Disable PaddleOCR
 - `-v, --verbose`: Enable verbose logging
 
-## Supported Data Formats
+See [QUICKSTART.md](QUICKSTART.md) for more details on the simple converter.
 
-The script can recognize bathymetric data in various formats:
+## Supported Data Formats (pdf_to_xyz.py)
+
+The simple converter can recognize bathymetric data in various formats:
 
 1. **Space-separated**: `X Y Z`
    ```
@@ -93,7 +176,18 @@ The script can recognize bathymetric data in various formats:
    Latitude: 78.901 Longitude: 123.456 Depth: -45.6
    ```
 
-## Output Format
+## Output Formats
+
+### Bathymetric Digitizer Output
+
+The digitizer produces multiple output files:
+- `output.xyz`: Calibrated XYZ point cloud
+- `points_raw.csv`: All OCR detections
+- `points_clean.csv`: Filtered and transformed points
+- `debug_overlay.png`: Visual QA with bounding boxes
+- `calibration.json`: Affine transformation parameters
+
+### Simple Converter Output
 
 The output XYZ file contains space-separated coordinates:
 
@@ -105,7 +199,18 @@ The output XYZ file contains space-separated coordinates:
 ...
 ```
 
-## How It Works
+## How the Bathymetric Digitizer Works
+
+1. **Image Loading**: PDF/PNG → grayscale at specified DPI
+2. **Cropping**: Automatic detection and removal of margins/title block
+3. **Preprocessing**: Denoising → adaptive threshold → border removal
+4. **OCR Detection**: Multiple PSM modes with bounding boxes
+5. **Filtering**: Parse depths, range check, deduplication
+6. **Calibration**: Interactive GCP selection or JSON loading
+7. **Transformation**: Apply affine matrix to convert pixels → metres
+8. **Export**: Write XYZ, CSVs, debug image with QC stats
+
+## How the Simple Converter Works
 
 1. **PDF to Image Conversion**: Converts each page to high-resolution images
 2. **Image Preprocessing**: Enhances image quality through:
@@ -169,8 +274,33 @@ See `requirements.txt` for complete list of dependencies:
 - pytesseract (Tesseract OCR)
 - easyocr (EasyOCR)
 - paddleocr (PaddleOCR)
-- PyMuPDF (PDF parsing)
 - pandas (Data handling)
+- matplotlib (Interactive calibration)
+- numpy (Numerical operations)
+
+## Repository Structure
+
+```
+PDF-XYZ/
+├── bathymetry_digitizer.py    # Production bathymetric survey digitizer
+├── pdf_to_xyz.py              # Simple PDF to XYZ converter
+├── test_bathymetry.py         # Tests for bathymetry digitizer
+├── test_converter.py          # Tests for simple converter
+├── example.py                 # Usage examples
+├── requirements.txt           # Python dependencies
+├── install.sh                 # Linux/macOS installation
+├── install.bat                # Windows installation
+├── BATHYMETRY_GUIDE.md       # Complete bathymetry digitizer guide
+├── QUICKSTART.md             # Quick start for simple converter
+├── CONTRIBUTING.md           # Contribution guidelines
+└── README.md                 # This file
+```
+
+## Documentation
+
+- **[BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md)**: Complete guide for the production bathymetric survey digitizer
+- **[QUICKSTART.md](QUICKSTART.md)**: Quick start guide for the simple PDF converter
+- **[CONTRIBUTING.md](CONTRIBUTING.md)**: Guidelines for contributing to the project
 
 ## License
 
