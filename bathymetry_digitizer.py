@@ -868,16 +868,22 @@ Examples:
   Using saved calibration:
     %(prog)s --input survey.png --calib-json calibration.json --outdir output/
     
+  With filename containing spaces (use quotes):
+    %(prog)s --input "survey 1 of 5.pdf" --interactive-calib --outdir output/
+    
   With custom parameters:
     %(prog)s --input survey.pdf --calib-json cal.json --outdir results/ \\
              --min-depth 5 --max-depth 30 --min-conf 60 \\
              --crop-params 100,200,50,50
+
+Note: If your filename contains spaces, enclose it in quotes:
+  --input "file with spaces.pdf"
         """
     )
     
     # Required arguments
     parser.add_argument('--input', required=True,
-                       help='Input PNG or PDF file')
+                       help='Input PNG or PDF file (use quotes if filename has spaces)')
     parser.add_argument('--outdir', required=True,
                        help='Output directory')
     
@@ -904,7 +910,53 @@ Examples:
     parser.add_argument('--debug', action='store_true',
                        help='Save intermediate debug images')
     
-    args = parser.parse_args()
+    # Custom error handling for common mistakes
+    try:
+        args = parser.parse_args()
+    except SystemExit as e:
+        # Check if this might be a filename with spaces issue
+        if e.code != 0 and len(sys.argv) > 1:
+            # Look for cases where --input or --calib-json is followed by multiple unquoted args
+            input_idx = None
+            try:
+                input_idx = sys.argv.index('--input')
+            except ValueError:
+                pass
+            
+            calib_idx = None
+            try:
+                calib_idx = sys.argv.index('--calib-json')
+            except ValueError:
+                pass
+            
+            # Check if there are multiple non-flag arguments after --input or --calib-json
+            for idx in [input_idx, calib_idx]:
+                if idx is not None and idx < len(sys.argv) - 1:
+                    # Collect all non-flag arguments after this flag
+                    parts = []
+                    for i in range(idx + 1, len(sys.argv)):
+                        if sys.argv[i].startswith('-'):
+                            break
+                        parts.append(sys.argv[i])
+                    
+                    # If we have multiple parts, likely a filename with spaces
+                    if len(parts) > 1:
+                        flag = sys.argv[idx]
+                        suggested_filename = ' '.join(parts)
+                        print("\n" + "="*70)
+                        print("ERROR: Filename with spaces must be quoted!")
+                        print("="*70)
+                        print("\nYour command has an unquoted filename with spaces.")
+                        print(f"\nDetected filename: {suggested_filename}")
+                        print(f"\nCorrect usage:")
+                        print(f'  {flag} "{suggested_filename}"')
+                        print("\nFull example:")
+                        print(f'  python bathymetry_digitizer.py {flag} "{suggested_filename}" --interactive-calib --outdir output/')
+                        print("\nAlternatively, rename the file without spaces:")
+                        print(f'  mv "{suggested_filename}" "{suggested_filename.replace(" ", "_")}"')
+                        print("\n" + "="*70 + "\n")
+                        sys.exit(1)
+        raise
     
     # Validate arguments
     if args.interactive_calib and not MATPLOTLIB_AVAILABLE:

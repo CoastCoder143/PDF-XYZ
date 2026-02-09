@@ -123,6 +123,16 @@ python bathymetry_digitizer.py \
     --debug
 ```
 
+**With filename containing spaces** (use quotes):
+```bash
+python bathymetry_digitizer.py \
+    --input "survey 1 of 5.pdf" \
+    --interactive-calib \
+    --outdir output/
+```
+
+> **Note**: If your filename contains spaces, enclose it in quotes: `--input "file name.pdf"`
+
 See [BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md) for complete documentation.
 
 ### Simple PDF Converter

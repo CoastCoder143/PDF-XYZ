@@ -274,6 +274,48 @@ python -c "import cv2; print(cv2.__version__)"
 
 If this succeeds, OpenCV is working correctly.
 
+### Filename with Spaces Error
+
+**Symptoms**: Script fails with "error: unrecognized arguments" when your filename contains spaces.
+
+Example error:
+```
+bathymetry_digitizer.py: error: unrecognized arguments: of 15.pdf
+```
+
+**Cause**: The shell splits filenames with spaces into multiple arguments unless they are quoted.
+
+**Solutions**:
+
+1. **Use quotes around the filename** (recommended):
+   ```bash
+   python bathymetry_digitizer.py --input "98347-1 of 15.pdf" --interactive-calib --outdir output/
+   ```
+
+2. **Use double quotes**:
+   ```bash
+   python bathymetry_digitizer.py --input "/path/to/file with spaces.pdf" --interactive-calib --outdir output/
+   ```
+
+3. **Use single quotes** (Unix/Linux/macOS):
+   ```bash
+   python bathymetry_digitizer.py --input '/path/to/file with spaces.pdf' --interactive-calib --outdir output/
+   ```
+
+4. **Escape spaces with backslash** (Unix/Linux/macOS):
+   ```bash
+   python bathymetry_digitizer.py --input /path/to/file\ with\ spaces.pdf --interactive-calib --outdir output/
+   ```
+
+5. **Rename the file** (if possible):
+   ```bash
+   # Remove spaces from filename
+   mv "98347-1 of 15.pdf" "98347-1_of_15.pdf"
+   python bathymetry_digitizer.py --input 98347-1_of_15.pdf --interactive-calib --outdir output/
+   ```
+
+**Best Practice**: Avoid spaces in filenames for command-line tools. Use underscores (_) or hyphens (-) instead.
+
 ### Dependencies Not Installed
 
 **Symptoms**: Script fails immediately with "ModuleNotFoundError" or "No module named 'numpy'" (or cv2, pytesseract, pandas)
