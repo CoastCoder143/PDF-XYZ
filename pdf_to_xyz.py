@@ -23,8 +23,6 @@ try:
     import cv2
     import numpy as np
     from PIL import Image
-    import fitz  # PyMuPDF
-    import pdfplumber
 except ImportError as e:
     print(f"Error importing required libraries: {e}")
     print("Please install required dependencies: pip install -r requirements.txt")
@@ -316,12 +314,15 @@ class PDFToXYZConverter:
                     try:
                         x, y, z = float(match[0]), float(match[1]), float(match[2])
                         # Basic validation - coordinates should be reasonable
-                        # Latitude: -90 to 90, Longitude: -180 to 180, Depth: typically negative or positive
+                        # Longitude: -180 to 180, Latitude: -90 to 90
+                        # Check both possible orderings
                         if abs(x) <= 180 and abs(y) <= 90:
+                            # X is likely longitude, Y is latitude
                             coordinates.append((x, y, z))
-                        elif abs(y) <= 180 and abs(x) <= 90:
-                            # Swap if order is reversed
+                        elif abs(x) <= 90 and abs(y) <= 180:
+                            # Swap: X is likely latitude, Y is longitude
                             coordinates.append((y, x, z))
+                        # If neither condition is met, reject the coordinate
                     except (ValueError, IndexError):
                         continue
         

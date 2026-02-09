@@ -33,10 +33,16 @@ class MockConverter:
                 for match in matches:
                     try:
                         x, y, z = float(match[0]), float(match[1]), float(match[2])
+                        # Basic validation - coordinates should be reasonable
+                        # Longitude: -180 to 180, Latitude: -90 to 90
+                        # Check both possible orderings
                         if abs(x) <= 180 and abs(y) <= 90:
+                            # X is likely longitude, Y is latitude
                             coordinates.append((x, y, z))
-                        elif abs(y) <= 180 and abs(x) <= 90:
+                        elif abs(x) <= 90 and abs(y) <= 180:
+                            # Swap: X is likely latitude, Y is longitude
                             coordinates.append((y, x, z))
+                        # If neither condition is met, reject the coordinate
                     except (ValueError, IndexError):
                         continue
         
