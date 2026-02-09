@@ -199,6 +199,34 @@ Transformation: `[X, Y] = affine_matrix × [px, py, 1]`
 
 ## Troubleshooting
 
+### Dependencies Not Installed
+
+**Symptoms**: Script fails immediately with "ModuleNotFoundError" or "No module named 'numpy'" (or cv2, pytesseract, pandas)
+
+**Solution**:
+
+Install required dependencies using one of these methods:
+
+1. **Recommended**: Install all dependencies from requirements.txt:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Core dependencies only** (minimal installation):
+   ```bash
+   pip install numpy opencv-python pytesseract pandas
+   ```
+
+3. **System dependencies** (must be installed before Python packages):
+   - **Ubuntu/Debian**: `sudo apt-get install tesseract-ocr poppler-utils python3-tk`
+   - **macOS**: `brew install tesseract poppler`
+   - **Windows**: Install Tesseract from [GitHub](https://github.com/UB-Mannheim/tesseract/wiki)
+
+After installation, verify Tesseract is accessible:
+```bash
+tesseract --version
+```
+
 ### No OCR Detections
 
 **Symptoms**: "No OCR detections found"

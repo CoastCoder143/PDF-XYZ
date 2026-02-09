@@ -90,10 +90,26 @@ from pathlib import Path
 from typing import List, Tuple, Optional, Dict, Any
 import warnings
 
-import numpy as np
-import cv2
-import pytesseract
-import pandas as pd
+# Core required imports with helpful error message
+try:
+    import numpy as np
+    import cv2
+    import pytesseract
+    import pandas as pd
+except ImportError as e:
+    print("\n" + "="*70)
+    print("ERROR: Required dependencies not installed")
+    print("="*70)
+    print(f"\nMissing module: {e}")
+    print("\nPlease install required dependencies:")
+    print("  pip install -r requirements.txt")
+    print("\nOr install core dependencies:")
+    print("  pip install numpy opencv-python pytesseract pandas")
+    print("\nFor full functionality, also install:")
+    print("  pip install pdf2image matplotlib")
+    print("\nSee BATHYMETRY_GUIDE.md for detailed installation instructions.")
+    print("="*70 + "\n")
+    sys.exit(1)
 
 # Optional imports
 try:
