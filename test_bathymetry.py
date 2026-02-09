@@ -137,19 +137,26 @@ def test_depth_filtering():
         {'text': '-5.0', 'conf': 70},  # Negative depth
         {'text': '100', 'conf': 85},   # Out of range
         {'text': 'X', 'conf': 60},     # Not a number
-        {'text': '8', 'conf': 90},     # Single digit but valid
+        {'text': '8', 'conf': 90},     # Single digit - will be rejected
         {'text': '25.3', 'conf': 65}
     ]
     
     min_depth = 0.0
     max_depth = 50.0
+    min_token_length = 2  # Reject single characters
     
     accepted = []
     rejected_parse = 0
     rejected_range = 0
+    rejected_short = 0
     
     for det in detections:
         text = det['text']
+        
+        # Reject single characters
+        if len(text) < min_token_length:
+            rejected_short += 1
+            continue
         
         # Try to parse
         try:
@@ -168,10 +175,12 @@ def test_depth_filtering():
     
     print(f"Total detections: {len(detections)}")
     print(f"Accepted: {len(accepted)}")
+    print(f"Rejected (short): {rejected_short}")
     print(f"Rejected (parse): {rejected_parse}")
     print(f"Rejected (range): {rejected_range}")
     
-    assert len(accepted) == 4, "Expected 4 accepted detections"
+    assert len(accepted) == 3, f"Expected 3 accepted detections, got {len(accepted)}"
+    assert rejected_short == 1, "Expected 1 short rejection"
     assert rejected_parse == 1, "Expected 1 parse rejection"
     assert rejected_range == 2, "Expected 2 range rejections"
     

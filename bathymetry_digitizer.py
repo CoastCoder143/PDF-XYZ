@@ -104,7 +104,6 @@ except ImportError:
     
 try:
     import matplotlib
-    matplotlib.use('TkAgg')  # Use Tk backend for interactive mode
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
     MATPLOTLIB_AVAILABLE = True
@@ -133,7 +132,7 @@ DEFAULT_MIN_CONFIDENCE = 50
 # Filtering
 DEFAULT_MIN_DEPTH = 0.0
 DEFAULT_MAX_DEPTH = 50.0
-MIN_TOKEN_LENGTH = 1  # Minimum characters for valid depth
+MIN_TOKEN_LENGTH = 2  # Minimum characters for valid depth (reject single digits)
 DEDUP_RADIUS_PX = 10  # Pixel radius for duplicate clustering
 
 # Preprocessing
@@ -521,6 +520,10 @@ def calibrate_affine_interactive(image: np.ndarray) -> Tuple[np.ndarray, List[Di
     """
     if not MATPLOTLIB_AVAILABLE:
         raise ImportError("matplotlib not available for interactive calibration")
+    
+    # Set backend for interactive mode
+    import matplotlib
+    matplotlib.use('TkAgg')
     
     logger.info("Starting interactive calibration...")
     logger.info("Click on ground control points in the image")
