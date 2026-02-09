@@ -58,9 +58,14 @@ python pdf_to_xyz.py input.pdf
 
 1. **System Dependencies** (for Tesseract OCR):
    ```bash
-   # Ubuntu/Debian
+   # Ubuntu/Debian (Desktop)
+   sudo apt-get update
+   sudo apt-get install tesseract-ocr poppler-utils libgl1-mesa-glx
+   
+   # Ubuntu/Debian (Server/Headless)
    sudo apt-get update
    sudo apt-get install tesseract-ocr poppler-utils
+   # Note: Use requirements-headless.txt for servers
    
    # macOS
    brew install tesseract poppler
@@ -72,8 +77,14 @@ python pdf_to_xyz.py input.pdf
 
 2. **Python Dependencies**:
    ```bash
+   # For desktop/workstation
    pip install -r requirements.txt
+   
+   # For servers/headless environments (if you get libGL.so.1 errors)
+   pip install -r requirements-headless.txt
    ```
+
+**Troubleshooting**: If you encounter "libGL.so.1" errors, see [BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md#opencv-libglso1-error-headless-environments) for solutions.
 
 ## Choosing the Right Tool
 

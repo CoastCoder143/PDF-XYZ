@@ -1,11 +1,15 @@
+# Requirements for headless/server environments (Docker, WSL, SSH servers, etc.)
+# Use this file if you encounter libGL.so.1 errors with regular requirements.txt
+# 
+# Installation:
+#   pip install -r requirements-headless.txt
+
 # Core PDF and Image Processing
 pdf2image==1.16.3
 Pillow>=10.0.0
 
-# OpenCV for image processing
-# Use opencv-python-headless instead if you encounter libGL.so.1 errors
-# in headless environments (servers, Docker, etc.)
-opencv-python>=4.8.0.76
+# OpenCV - Headless version (no GUI dependencies)
+opencv-python-headless>=4.8.0.76
 
 # OCR Engines - Multiple technologies for best results
 pytesseract>=0.3.10

@@ -93,9 +93,6 @@ import warnings
 # Core required imports with helpful error message
 try:
     import numpy as np
-    import cv2
-    import pytesseract
-    import pandas as pd
 except ImportError as e:
     print("\n" + "="*70)
     print("ERROR: Required dependencies not installed")
@@ -105,8 +102,60 @@ except ImportError as e:
     print("  pip install -r requirements.txt")
     print("\nOr install core dependencies:")
     print("  pip install numpy opencv-python pytesseract pandas")
-    print("\nFor full functionality, also install:")
-    print("  pip install pdf2image matplotlib")
+    print("\nSee BATHYMETRY_GUIDE.md for detailed installation instructions.")
+    print("="*70 + "\n")
+    sys.exit(1)
+
+try:
+    import cv2
+except ImportError as e:
+    # Check if this is a libGL.so error (common in headless environments)
+    error_msg = str(e)
+    if 'libGL.so' in error_msg or 'libgthread' in error_msg or 'libSM.so' in error_msg:
+        print("\n" + "="*70)
+        print("ERROR: OpenCV system library not found")
+        print("="*70)
+        print(f"\nError details: {e}")
+        print("\nThis error occurs when system graphics libraries are missing.")
+        print("This is common in headless servers or Docker containers.")
+        print("\nSOLUTION OPTIONS:")
+        print("\n1. Install system graphics libraries (recommended for desktop):")
+        print("   Ubuntu/Debian:")
+        print("     sudo apt-get update")
+        print("     sudo apt-get install -y libgl1-mesa-glx libglib2.0-0")
+        print("\n   CentOS/RHEL:")
+        print("     sudo yum install mesa-libGL")
+        print("\n2. Use headless OpenCV (recommended for servers):")
+        print("   pip uninstall opencv-python")
+        print("   pip install opencv-python-headless")
+        print("\n3. Set environment variable (temporary workaround):")
+        print("   export QT_QPA_PLATFORM=offscreen")
+        print("\nSee BATHYMETRY_GUIDE.md for detailed troubleshooting.")
+        print("="*70 + "\n")
+    else:
+        print("\n" + "="*70)
+        print("ERROR: OpenCV (cv2) not installed")
+        print("="*70)
+        print(f"\nMissing module: {e}")
+        print("\nPlease install OpenCV:")
+        print("  pip install opencv-python")
+        print("\nOr install all dependencies:")
+        print("  pip install -r requirements.txt")
+        print("="*70 + "\n")
+    sys.exit(1)
+
+try:
+    import pytesseract
+    import pandas as pd
+except ImportError as e:
+    print("\n" + "="*70)
+    print("ERROR: Required dependencies not installed")
+    print("="*70)
+    print(f"\nMissing module: {e}")
+    print("\nPlease install required dependencies:")
+    print("  pip install -r requirements.txt")
+    print("\nOr install missing dependency:")
+    print("  pip install pytesseract pandas")
     print("\nSee BATHYMETRY_GUIDE.md for detailed installation instructions.")
     print("="*70 + "\n")
     sys.exit(1)

@@ -36,11 +36,21 @@ Digitizes scanned analogue hydrographic drawings containing dense numeric depth 
 
 ### Installation
 
-**Ubuntu/Debian**:
+**Ubuntu/Debian** (Desktop):
 ```bash
 sudo apt-get update
-sudo apt-get install tesseract-ocr poppler-utils python3-tk
+sudo apt-get install tesseract-ocr poppler-utils python3-tk libgl1-mesa-glx
 pip install -r requirements.txt
+```
+
+**Ubuntu/Debian** (Server/Headless):
+```bash
+sudo apt-get update
+sudo apt-get install tesseract-ocr poppler-utils
+pip install -r requirements.txt
+# Then replace opencv-python with headless version:
+pip uninstall opencv-python
+pip install opencv-python-headless
 ```
 
 **macOS**:
@@ -54,6 +64,18 @@ pip install -r requirements.txt
 2. Install Poppler: https://github.com/oschwartz10612/poppler-windows/releases
 3. Add both to PATH
 4. Install Python packages: `pip install -r requirements.txt`
+
+**Docker/Containers**:
+```bash
+# Add to Dockerfile before pip install
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    poppler-utils \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+```
+Or use opencv-python-headless in requirements.txt
 
 ## Usage
 
@@ -198,6 +220,59 @@ Transformation: `[X, Y] = affine_matrix × [px, py, 1]`
 7. **Export**: Write XYZ, CSVs, debug image
 
 ## Troubleshooting
+
+### OpenCV libGL.so.1 Error (Headless Environments)
+
+**Symptoms**: Script fails with "libGL.so.1: cannot open shared object file: No such file or directory" or similar OpenCV library errors, even after installing opencv-python via pip.
+
+**Cause**: OpenCV requires system graphics libraries that aren't installed in headless environments (servers, Docker containers, WSL without X server, etc.).
+
+**Solutions** (in order of recommendation):
+
+1. **For Headless Servers/Docker** (recommended):
+   ```bash
+   # Uninstall regular OpenCV
+   pip uninstall opencv-python opencv-contrib-python
+   
+   # Install headless version
+   pip install opencv-python-headless
+   ```
+   
+   The headless version works without GUI libraries and is perfect for server environments.
+
+2. **For Desktop Linux** (if you need GUI features):
+   ```bash
+   # Ubuntu/Debian
+   sudo apt-get update
+   sudo apt-get install -y libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev
+   
+   # CentOS/RHEL/Fedora
+   sudo yum install mesa-libGL
+   ```
+
+3. **Temporary Workaround** (use environment variable):
+   ```bash
+   export QT_QPA_PLATFORM=offscreen
+   python bathymetry_digitizer.py --input survey.pdf ...
+   ```
+
+4. **Docker/Container Environments**:
+   Add to your Dockerfile:
+   ```dockerfile
+   RUN apt-get update && apt-get install -y \
+       libgl1-mesa-glx \
+       libglib2.0-0 \
+       && rm -rf /var/lib/apt/lists/*
+   ```
+   
+   Or use opencv-python-headless in requirements.txt
+
+**Verification**:
+```python
+python -c "import cv2; print(cv2.__version__)"
+```
+
+If this succeeds, OpenCV is working correctly.
 
 ### Dependencies Not Installed
 
