@@ -2,6 +2,25 @@
 
 Advanced tools for digitizing bathymetric survey data from scanned documents.
 
+## 🚀 Quick Start - Interactive Mode
+
+**The easiest way to use this tool** - Just run one command:
+
+```bash
+python convert.py
+```
+
+This interactive script will:
+1. 📁 Help you select your input file
+2. 🔧 Choose the right conversion tool
+3. 📂 Set up output directory
+4. ⚙️ Configure options with simple prompts
+5. ✨ Process your file and save results
+
+**No command-line arguments needed!** Perfect for beginners.
+
+---
+
 ## Tools Included
 
 This repository contains two complementary tools for processing bathymetric data:
@@ -22,7 +41,7 @@ This repository contains two complementary tools for processing bathymetric data
 
 📖 **[Complete Guide →](BATHYMETRY_GUIDE.md)**
 
-**Quick Start**:
+**Direct Command-Line Usage**:
 ```bash
 # Interactive calibration (first time)
 python bathymetry_digitizer.py --input survey.png --interactive-calib --outdir output/
@@ -45,7 +64,7 @@ python bathymetry_digitizer.py --input survey.png --calib-json calibration.json 
 
 📖 **[Quick Start Guide →](QUICKSTART.md)**
 
-**Quick Start**:
+**Direct Command-Line Usage**:
 ```bash
 python pdf_to_xyz.py input.pdf
 ```
@@ -200,6 +219,99 @@ python pdf_to_xyz.py input.pdf -v
 - `-v, --verbose`: Enable verbose logging
 
 See [QUICKSTART.md](QUICKSTART.md) for more details on the simple converter.
+
+## Interactive Mode (Easiest Way!) 🎯
+
+The `convert.py` script provides a user-friendly interactive interface - perfect for beginners or one-off conversions.
+
+### How It Works
+
+```bash
+python convert.py
+```
+
+The script will guide you through:
+
+**Step 1: Select Input File**
+- Automatically lists PDF/PNG files in current directory
+- Enter a number to select, or provide a file path
+- Handles filenames with spaces automatically
+
+**Step 2: Choose Conversion Tool**
+- Option 1: Simple PDF Converter (for text-based PDFs)
+- Option 2: Bathymetric Survey Digitizer (for scanned charts)
+- Clear descriptions help you choose
+
+**Step 3: Output Directory**
+- Default: `./output/`
+- Or specify your own
+
+**Step 4: Configure Options**
+- DPI setting (quality vs speed)
+- Calibration file (for bathymetric digitizer)
+- All with sensible defaults
+
+**Step 5: Confirm & Process**
+- Review your choices
+- Press 'y' to proceed
+- Watch the progress!
+
+### Example Interactive Session
+
+```
+======================================================================
+               PDF to XYZ Converter - Interactive Mode
+======================================================================
+
+----------------------------------------------------------------------
+  Step 1: Select Input File
+----------------------------------------------------------------------
+
+Found 3 file(s) in current directory:
+  1. survey_chart.pdf (1248.5 KB)
+  2. bathymetric_data.pdf (892.1 KB)
+  3. scan_001.png (2156.8 KB)
+
+Options:
+  - Enter a number (1-3) to select a file
+  - Or enter a file path directly
+
+Your choice: 1
+
+✓ Selected: survey_chart.pdf
+
+----------------------------------------------------------------------
+  Step 2: Select Conversion Tool
+----------------------------------------------------------------------
+
+Which type of conversion do you need?
+
+  1. Simple PDF Converter (pdf_to_xyz.py)
+     - For PDFs with XYZ text data
+     - Quick extraction without calibration
+
+  2. Bathymetric Survey Digitizer (bathymetry_digitizer.py)
+     - For professional hydrographic survey charts
+     - Requires georeferencing calibration
+
+Enter 1 or 2: 2
+
+✓ Selected: Bathymetric Digitizer
+
+[... continues with remaining steps ...]
+```
+
+### Benefits of Interactive Mode
+
+✅ **No command-line knowledge needed**
+✅ **File browser shows available files**
+✅ **Guided tool selection**
+✅ **Sensible defaults for all parameters**
+✅ **Handles filenames with spaces**
+✅ **Confirmation before processing**
+✅ **Clear progress indicators**
+
+Perfect for users who want simplicity without memorizing command-line arguments!
 
 ## Supported Data Formats (pdf_to_xyz.py)
 
