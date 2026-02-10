@@ -1,0 +1,75 @@
+{
+  "_comment": "PDF-XYZ Converter Configuration File",
+  "_usage": "Edit this file to set your input file and parameters, then run: python run_from_config.py",
+  
+  "input_file": "path/to/your/input.pdf",
+  
+  "tool": "simple",
+  "_tool_options": ["simple", "bathymetry"],
+  "_tool_description": "simple: Basic PDF to XYZ converter | bathymetry: Advanced survey digitizer with calibration",
+  
+  "output_directory": "output",
+  
+  "common_parameters": {
+    "dpi": 300,
+    "_dpi_description": "Resolution for PDF to image conversion (300, 600, or 1200)"
+  },
+  
+  "simple_converter_parameters": {
+    "output_file": "",
+    "_output_file_description": "Leave empty to auto-generate from input filename",
+    "use_tesseract": true,
+    "use_easyocr": true,
+    "use_paddleocr": true,
+    "verbose": false
+  },
+  
+  "bathymetry_digitizer_parameters": {
+    "interactive_calibration": false,
+    "calibration_file": "",
+    "_calibration_description": "Path to calibration.json file (required if interactive_calibration is false)",
+    "min_depth": 0,
+    "max_depth": 50,
+    "min_confidence": 0,
+    "crop_params": "",
+    "_crop_params_description": "Format: left,top,right,bottom (e.g., 100,200,50,50) - leave empty for auto-crop",
+    "auto_crop": true,
+    "debug": false
+  },
+  
+  "_examples": {
+    "_example_1": "Simple PDF conversion",
+    "example_1": {
+      "input_file": "survey_data.pdf",
+      "tool": "simple",
+      "output_directory": "results",
+      "common_parameters": {
+        "dpi": 600
+      }
+    },
+    
+    "_example_2": "Bathymetric digitizer with existing calibration",
+    "example_2": {
+      "input_file": "bathymetric_chart.png",
+      "tool": "bathymetry",
+      "output_directory": "digitized_output",
+      "bathymetry_digitizer_parameters": {
+        "interactive_calibration": false,
+        "calibration_file": "calibration.json",
+        "min_depth": 5,
+        "max_depth": 30
+      }
+    },
+    
+    "_example_3": "Bathymetric digitizer with interactive calibration",
+    "example_3": {
+      "input_file": "survey_sheet.pdf",
+      "tool": "bathymetry",
+      "output_directory": "survey_results",
+      "bathymetry_digitizer_parameters": {
+        "interactive_calibration": true,
+        "debug": true
+      }
+    }
+  }
+}

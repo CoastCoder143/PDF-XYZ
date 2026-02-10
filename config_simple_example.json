@@ -1,0 +1,20 @@
+{
+  "_comment": "Simple PDF Converter Example",
+  "_description": "This example shows basic PDF to XYZ conversion with default settings",
+  
+  "input_file": "your_bathymetric_data.pdf",
+  "tool": "simple",
+  "output_directory": "output",
+  
+  "common_parameters": {
+    "dpi": 300
+  },
+  
+  "simple_converter_parameters": {
+    "output_file": "",
+    "use_tesseract": true,
+    "use_easyocr": true,
+    "use_paddleocr": true,
+    "verbose": false
+  }
+}

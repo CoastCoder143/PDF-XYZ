@@ -2,9 +2,39 @@
 
 Advanced tools for digitizing bathymetric survey data from scanned documents.
 
-## 🚀 Quick Start - Interactive Mode
+## 🚀 Three Ways to Use This Tool
 
-**The easiest way to use this tool** - Just run one command:
+Choose the method that works best for you:
+
+### 1. Configuration File (Best for Repeated Use) ⭐ **NEW**
+
+**Set your input file once in a config file, then run:**
+
+```bash
+python run_from_config.py
+```
+
+Perfect for:
+- 📋 **Documenting your workflow**
+- 🔄 **Reusing the same settings**
+- 📦 **Batch processing multiple files**
+- 👥 **Sharing configurations with team**
+
+📖 **[Complete Configuration Guide →](CONFIG_GUIDE.md)**
+
+**Quick Setup:**
+```bash
+# 1. Copy a template
+cp config_simple_example.json my_config.json
+
+# 2. Edit my_config.json with your input file path
+# 3. Run conversion
+python run_from_config.py --config my_config.json
+```
+
+### 2. Interactive Mode (Easiest for Beginners)
+
+**Just run one command and answer prompts:**
 
 ```bash
 python convert.py
@@ -17,7 +47,21 @@ This interactive script will:
 4. ⚙️ Configure options with simple prompts
 5. ✨ Process your file and save results
 
-**No command-line arguments needed!** Perfect for beginners.
+**No command-line arguments needed!** Perfect for one-off conversions.
+
+### 3. Direct Command-Line (For Automation)
+
+**For scripting and advanced users:**
+
+```bash
+# Simple converter
+python pdf_to_xyz.py input.pdf
+
+# Bathymetric digitizer
+python bathymetry_digitizer.py --input survey.png --interactive-calib --outdir output/
+```
+
+Full control over all parameters via command-line arguments.
 
 ---
 
