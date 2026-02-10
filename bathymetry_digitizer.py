@@ -464,12 +464,22 @@ def ocr_soundings(image: np.ndarray,
     Returns:
         List of detection dicts with keys: text, bbox, conf, centroid
     """
+    h, w = image.shape[:2]
+    megapixels = (h * w) / 1_000_000
+    
+    # Estimate processing time (rough estimate: ~0.5-2 seconds per megapixel)
+    estimated_minutes = int((megapixels * 1.0) / 60) + 1
+    
     logger.info("Running OCR detection...")
+    logger.info(f"Image size: {w}x{h} ({megapixels:.1f} megapixels)")
+    logger.info(f"⏱  Estimated OCR time: {estimated_minutes}-{estimated_minutes*2} minutes")
+    logger.info("🔄 Processing... (this may take a while, the script is NOT frozen)")
     
     detections = []
     
     # Try multiple PSM modes
-    for psm in PSM_MODES:
+    for idx, psm in enumerate(PSM_MODES, 1):
+        logger.info(f"📄 Running OCR pass {idx}/{len(PSM_MODES)} (PSM mode {psm})...")
         config = f'--psm {psm} -c tessedit_char_whitelist={TESSERACT_WHITELIST}'
         
         try:

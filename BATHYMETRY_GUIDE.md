@@ -623,6 +623,54 @@ Depth statistics:
 - OCR accuracy depends on scan quality
 - Manual verification recommended for critical applications
 
+## Frequently Asked Questions (FAQ)
+
+### Q: Is the script frozen or still processing during OCR?
+
+**A**: The script is likely still processing! OCR on large scanned images takes time:
+
+- **Small charts** (< 5 megapixels): 1-3 minutes
+- **Medium charts** (5-20 megapixels): 3-10 minutes  
+- **Large charts** (20-100 megapixels): 10-30 minutes
+- **Very large charts** (>100 megapixels): 30-60+ minutes
+
+**How to tell it's working**:
+1. Look for log messages like "Running OCR pass 1/3" or "Running OCR pass 2/3"
+2. Check system resource monitor - CPU should be active (50-100% usage)
+3. The script prints estimated time at the start of OCR
+4. If using interactive mode, wait for the calibration window to appear
+
+**What to do**:
+- Be patient! Large images take time
+- Don't close the terminal
+- The script will continue and eventually show progress
+- If truly frozen (no CPU activity for 10+ minutes), press Ctrl+C and report the issue
+
+### Q: How long should I wait during "Running OCR detection"?
+
+**A**: Check the log message that says "⏱ Estimated OCR time" at the start. For reference:
+- A typical 10 megapixel chart (like 9696x12279 pixels = 119 MP) can take 15-40 minutes
+- The script tries multiple OCR modes (PSM), so it runs OCR 2-3 times
+- You'll see progress messages like "Running OCR pass 1/3", "Running OCR pass 2/3", etc.
+
+**Tips to speed up OCR**:
+1. Reduce DPI when rendering PDF (use `--dpi 200` instead of default 300)
+2. Crop more aggressively to remove margins
+3. Process smaller sections of large charts separately
+
+### Q: The interactive calibration window doesn't appear - is it stuck?
+
+**A**: The window appears **AFTER** OCR completes. Follow this sequence:
+
+1. ✅ PDF/image loading (fast, seconds)
+2. ✅ Cropping (fast, seconds)
+3. ✅ Preprocessing (medium, 10-30 seconds)
+4. ⏱️ **OCR detection** ← YOU ARE HERE (slow, minutes to hours)
+5. ⏱️ Filtering soundings (fast, seconds)
+6. 🖱️ **Interactive calibration window appears** ← WAIT FOR THIS
+
+Only proceed with calibration **after** you see the window with the chart image.
+
 ## Integration with GIS
 
 Import the XYZ file into GIS software:
