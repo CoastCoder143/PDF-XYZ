@@ -1,5 +1,24 @@
 # Quick Start Guide
 
+## Easiest Way: Interactive Mode 🚀
+
+**Just run one command and follow the prompts!**
+
+```bash
+python convert.py
+```
+
+The script will:
+1. Show you available PDF/PNG files
+2. Help you choose the right tool
+3. Ask for output directory
+4. Configure options with simple questions
+5. Process your file!
+
+**No command-line knowledge needed!** Perfect for beginners.
+
+---
+
 ## Installation
 
 1. **Clone the repository**:
@@ -34,6 +53,16 @@
    ```
 
 ## Basic Usage
+
+### Option 1: Interactive Mode (Recommended for Beginners)
+
+```bash
+python convert.py
+```
+
+Just answer the questions and let the script guide you!
+
+### Option 2: Command-Line Mode
 
 Convert a PDF to XYZ format:
 ```bash
