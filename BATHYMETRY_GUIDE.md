@@ -327,6 +327,95 @@ E: Package 'libgl1-mesa-glx' has no installation candidate
    python bathymetry_digitizer.py --input survey.pdf ...
    ```
 
+### OpenCV "module 'cv2' has no attribute 'cvtColor'" Error
+
+**Symptoms**: Script fails with error like:
+```
+AttributeError: module 'cv2' has no attribute 'cvtColor'
+```
+or similar errors about missing OpenCV functions like `imread`, `threshold`, etc.
+
+**Cause**: OpenCV is installed but is corrupted, incomplete, or there's a conflict between different OpenCV packages (opencv-python vs opencv-python-headless vs opencv-contrib-python).
+
+**This is different from an import error** - the cv2 module loads, but its functions are missing or broken.
+
+**Solutions**:
+
+1. **Complete Reinstallation** (recommended - fixes most issues):
+   ```bash
+   # Step 1: Remove ALL OpenCV packages completely
+   pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python
+   
+   # Step 2: Clear pip cache (important!)
+   pip cache purge
+   
+   # Step 3: Reinstall the correct version for your system
+   # For desktop/laptop with display:
+   pip install opencv-python==4.8.1.78
+   
+   # OR for servers/headless/Docker:
+   pip install opencv-python-headless==4.8.1.78
+   
+   # Step 4: Verify it works
+   python -c "import cv2; print('OpenCV version:', cv2.__version__); print('cvtColor exists:', hasattr(cv2, 'cvtColor'))"
+   ```
+
+2. **Check for Package Conflicts**:
+   ```bash
+   # See what's currently installed
+   pip list | grep opencv
+   
+   # You should see ONLY ONE of these:
+   # - opencv-python
+   # - opencv-python-headless
+   # 
+   # If you see multiple, remove all and reinstall just one
+   ```
+
+3. **System Package Conflicts** (Linux):
+   Sometimes system-installed OpenCV conflicts with pip version:
+   ```bash
+   # Check if system OpenCV is installed
+   dpkg -l | grep opencv
+   
+   # If found, you may need to remove it
+   sudo apt-get remove python3-opencv
+   
+   # Then reinstall via pip
+   pip install opencv-python
+   ```
+
+4. **Virtual Environment Issues**:
+   If using a virtual environment, try recreating it:
+   ```bash
+   deactivate  # if currently in venv
+   rm -rf venv
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+5. **Verify Installation**:
+   After reinstalling, run this diagnostic:
+   ```bash
+   python3 << 'EOF'
+   import cv2
+   import sys
+   
+   print(f"OpenCV version: {cv2.__version__}")
+   print(f"OpenCV file location: {cv2.__file__}")
+   
+   required_functions = ['cvtColor', 'imread', 'threshold', 'medianBlur', 'adaptiveThreshold']
+   missing = [f for f in required_functions if not hasattr(cv2, f)]
+   
+   if missing:
+       print(f"\n❌ ERROR: Missing functions: {missing}")
+       sys.exit(1)
+   else:
+       print(f"\n✓ All required OpenCV functions are available")
+   EOF
+   ```
+
 4. **Docker/Container Environments**:
    Add to your Dockerfile:
    ```dockerfile

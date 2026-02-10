@@ -147,6 +147,39 @@ except ImportError as e:
         print("="*70 + "\n")
     sys.exit(1)
 
+# Validate that OpenCV is functional (not just importable)
+try:
+    # Check for essential OpenCV functions
+    if not hasattr(cv2, 'cvtColor'):
+        raise AttributeError("OpenCV module is incomplete or corrupted")
+    if not hasattr(cv2, 'imread'):
+        raise AttributeError("OpenCV module is incomplete or corrupted")
+    if not hasattr(cv2, 'threshold'):
+        raise AttributeError("OpenCV module is incomplete or corrupted")
+except AttributeError as e:
+    print("\n" + "="*70)
+    print("ERROR: OpenCV installation is broken or incomplete")
+    print("="*70)
+    print(f"\nError: {e}")
+    print("\nThe cv2 module imported but is missing critical functions.")
+    print("This usually means:")
+    print("  1. Corrupted or incomplete installation")
+    print("  2. Conflict between opencv-python and opencv-python-headless")
+    print("  3. Wrong version or partially installed package")
+    print("\nSOLUTION:")
+    print("\n1. Completely remove all OpenCV packages:")
+    print("   pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python")
+    print("\n2. Reinstall the correct version:")
+    print("   For desktop/GUI systems:")
+    print("     pip install opencv-python")
+    print("   For servers/headless systems:")
+    print("     pip install opencv-python-headless")
+    print("\n3. Verify installation:")
+    print("   python -c \"import cv2; print('OpenCV version:', cv2.__version__)\"")
+    print("\nSee BATHYMETRY_GUIDE.md for detailed troubleshooting.")
+    print("="*70 + "\n")
+    sys.exit(1)
+
 try:
     import pytesseract
     import pandas as pd

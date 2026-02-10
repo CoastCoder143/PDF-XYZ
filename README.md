@@ -457,6 +457,21 @@ The script automatically uses the best result from all available engines.
 
 ## Troubleshooting
 
+### "module 'cv2' has no attribute 'cvtColor'"
+
+**Problem**: OpenCV imports but functions are missing.
+
+**Solution**: Reinstall OpenCV cleanly:
+```bash
+pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python
+pip cache purge
+pip install opencv-python
+```
+
+For servers/headless: use `opencv-python-headless` instead.
+
+See [BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md) for detailed troubleshooting.
+
 ### "Tesseract not available"
 Install Tesseract OCR system package (see Prerequisites).
 
@@ -464,6 +479,32 @@ Install Tesseract OCR system package (see Prerequisites).
 - Check if the PDF contains recognizable coordinate patterns
 - Try increasing DPI: `--dpi 600`
 - Ensure text is not in an image-only format without actual text
+
+### "libGL.so.1: cannot open shared object file"
+
+**Problem**: Missing system graphics libraries.
+
+**Solution for Ubuntu 22.04+**:
+```bash
+sudo apt-get install -y libgl1 libglib2.0-0
+```
+
+**Solution for headless/servers**:
+```bash
+pip uninstall opencv-python
+pip install opencv-python-headless
+```
+
+### "Package 'libgl1-mesa-glx' has no installation candidate"
+
+Use `libgl1` instead on Ubuntu 22.04+, or run `./install.sh` which auto-detects.
+
+### Filename with Spaces Error
+
+Wrap filenames in quotes:
+```bash
+python bathymetry_digitizer.py --input "survey 1 of 15.pdf" --interactive-calib --outdir output/
+```
 
 ### Low accuracy
 - Increase DPI for higher resolution
