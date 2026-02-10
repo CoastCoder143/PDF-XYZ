@@ -150,12 +150,14 @@ except ImportError as e:
 # Validate that OpenCV is functional (not just importable)
 try:
     # Check for essential OpenCV functions
-    if not hasattr(cv2, 'cvtColor'):
-        raise AttributeError("OpenCV module is incomplete or corrupted")
-    if not hasattr(cv2, 'imread'):
-        raise AttributeError("OpenCV module is incomplete or corrupted")
-    if not hasattr(cv2, 'threshold'):
-        raise AttributeError("OpenCV module is incomplete or corrupted")
+    missing_functions = []
+    required_functions = ['cvtColor', 'imread', 'threshold', 'medianBlur', 'adaptiveThreshold']
+    for func_name in required_functions:
+        if not hasattr(cv2, func_name):
+            missing_functions.append(func_name)
+    
+    if missing_functions:
+        raise AttributeError(f"OpenCV module is missing required functions: {', '.join(missing_functions)}")
 except AttributeError as e:
     print("\n" + "="*70)
     print("ERROR: OpenCV installation is broken or incomplete")
