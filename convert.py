@@ -220,8 +220,9 @@ def run_bathymetry_digitizer(input_file, output_dir, params):
     if params.get('interactive_calib'):
         print("Mode:   Interactive calibration")
         
-        # Check for headless environment
-        if 'DISPLAY' not in os.environ and os.name != 'nt':
+        # Check for headless environment (skip check on macOS)
+        import sys
+        if sys.platform != 'darwin' and 'DISPLAY' not in os.environ and os.name != 'nt':
             print("\n" + "="*70)
             print("⚠ WARNING: HEADLESS ENVIRONMENT DETECTED")
             print("="*70)

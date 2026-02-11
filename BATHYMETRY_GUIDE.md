@@ -704,8 +704,9 @@ Only proceed with calibration **after** you see the window with the chart image.
    # Connect with X11 forwarding
    ssh -X username@server
    
-   # Set DISPLAY if needed
-   export DISPLAY=:0
+   # DISPLAY is automatically set by SSH, but verify it:
+   echo $DISPLAY
+   # Should show something like localhost:10.0
    
    # Then run the script
    python bathymetry_digitizer.py --input scan.pdf --outdir output --interactive-calib

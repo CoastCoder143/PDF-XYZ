@@ -636,7 +636,10 @@ def calibrate_affine_interactive(image: np.ndarray) -> Tuple[np.ndarray, List[Di
     
     # Detect if we're in a headless environment
     import os
-    if 'DISPLAY' not in os.environ and os.name != 'nt':
+    import sys
+    
+    # Check for headless (skip check on macOS which doesn't use DISPLAY)
+    if sys.platform != 'darwin' and 'DISPLAY' not in os.environ and os.name != 'nt':
         raise RuntimeError(
             "Interactive calibration requires a graphical display.\n"
             "You are running in a headless environment (no DISPLAY variable set).\n\n"
@@ -659,7 +662,7 @@ def calibrate_affine_interactive(image: np.ndarray) -> Tuple[np.ndarray, List[Di
             backend_set = True
             logger.info(f"Using matplotlib backend: {backend}")
             break
-        except Exception as e:
+        except (ImportError, RuntimeError) as e:
             logger.debug(f"Backend {backend} not available: {e}")
             continue
     
@@ -1049,9 +1052,10 @@ Note: If your filename contains spaces, enclose it in quotes:
             logger.error("Install it with: pip install matplotlib")
             sys.exit(1)
         
-        # Check for headless environment early
+        # Check for headless environment early (skip check on macOS)
         import os
-        if 'DISPLAY' not in os.environ and os.name != 'nt':
+        import sys as sys_module
+        if sys_module.platform != 'darwin' and 'DISPLAY' not in os.environ and os.name != 'nt':
             logger.error("=" * 70)
             logger.error("HEADLESS ENVIRONMENT DETECTED")
             logger.error("=" * 70)
