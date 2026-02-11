@@ -1,0 +1,23 @@
+{
+  "_comment": "Bathymetric Digitizer Example - With Existing Calibration",
+  "_description": "Use this after you've created a calibration file",
+  
+  "input_file": "your_survey_chart.pdf",
+  "tool": "bathymetry",
+  "output_directory": "survey_output",
+  
+  "common_parameters": {
+    "dpi": 600
+  },
+  
+  "bathymetry_digitizer_parameters": {
+    "interactive_calibration": false,
+    "calibration_file": "calibration.json",
+    "min_depth": 5,
+    "max_depth": 30,
+    "min_confidence": 60,
+    "crop_params": "",
+    "auto_crop": true,
+    "debug": true
+  }
+}
