@@ -87,12 +87,14 @@ This repository contains two complementary tools for processing bathymetric data
 
 **Direct Command-Line Usage**:
 ```bash
-# Interactive calibration (first time)
+# Interactive calibration (first time) - REQUIRES DISPLAY/GUI
 python bathymetry_digitizer.py --input survey.png --interactive-calib --outdir output/
 
-# Using saved calibration
+# Using saved calibration (headless-compatible)
 python bathymetry_digitizer.py --input survey.png --calib-json calibration.json --outdir results/
 ```
+
+⚠️ **Important**: Interactive calibration requires a graphical display (Windows/Mac/Linux Desktop). For headless environments (servers, SSH, Docker), use non-interactive calibration with `--calib-json`. See [BATHYMETRY_GUIDE.md](BATHYMETRY_GUIDE.md#q-error-cannot-load-backend-tkagg-or-headless-environment-detected---what-do-i-do) for details.
 
 ### 2. Simple PDF to XYZ Converter (`pdf_to_xyz.py`)
 

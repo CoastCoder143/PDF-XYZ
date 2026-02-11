@@ -219,6 +219,26 @@ def run_bathymetry_digitizer(input_file, output_dir, params):
     
     if params.get('interactive_calib'):
         print("Mode:   Interactive calibration")
+        
+        # Check for headless environment
+        if 'DISPLAY' not in os.environ and os.name != 'nt':
+            print("\n" + "="*70)
+            print("⚠ WARNING: HEADLESS ENVIRONMENT DETECTED")
+            print("="*70)
+            print("\nInteractive calibration requires a graphical display.")
+            print("You are running in a headless environment (no DISPLAY set).")
+            print("\nThis will likely fail. Consider:")
+            print("  1. Use --calib-json with a pre-made calibration file")
+            print("  2. Run this script on your local machine")
+            print("  3. Enable X11 forwarding: ssh -X user@server")
+            print("\nSee BATHYMETRY_GUIDE.md for details.")
+            print("="*70)
+            
+            cont = input("\nDo you want to continue anyway? (y/n): ").strip().lower()
+            if cont != 'y':
+                print("\n✗ Cancelled by user")
+                return False
+        
         print("\n⚠ Interactive calibration requires matplotlib")
         print("You will be prompted to:")
         print("  1. Click on known ground control points")

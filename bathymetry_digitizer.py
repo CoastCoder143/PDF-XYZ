@@ -634,9 +634,45 @@ def calibrate_affine_interactive(image: np.ndarray) -> Tuple[np.ndarray, List[Di
     if not MATPLOTLIB_AVAILABLE:
         raise ImportError("matplotlib not available for interactive calibration")
     
-    # Set backend for interactive mode
+    # Detect if we're in a headless environment
+    import os
+    if 'DISPLAY' not in os.environ and os.name != 'nt':
+        raise RuntimeError(
+            "Interactive calibration requires a graphical display.\n"
+            "You are running in a headless environment (no DISPLAY variable set).\n\n"
+            "Solutions:\n"
+            "  1. Use non-interactive calibration with a pre-made calibration.json file\n"
+            "  2. Run this script on your local machine with a display\n"
+            "  3. Enable X11 forwarding: ssh -X user@server\n"
+            "  4. Use VNC or another remote desktop solution\n\n"
+            "See BATHYMETRY_GUIDE.md for detailed instructions."
+        )
+    
+    # Try multiple backends in order of preference
     import matplotlib
-    matplotlib.use('TkAgg')
+    backends_to_try = ['TkAgg', 'Qt5Agg', 'GTK3Agg', 'GTK4Agg']
+    backend_set = False
+    
+    for backend in backends_to_try:
+        try:
+            matplotlib.use(backend)
+            backend_set = True
+            logger.info(f"Using matplotlib backend: {backend}")
+            break
+        except Exception as e:
+            logger.debug(f"Backend {backend} not available: {e}")
+            continue
+    
+    if not backend_set:
+        raise RuntimeError(
+            "No suitable matplotlib backend found for interactive display.\n"
+            "Interactive calibration requires a GUI backend (TkAgg, Qt5Agg, GTK3Agg, or GTK4Agg).\n\n"
+            "Solutions:\n"
+            "  1. Install tk: sudo apt-get install python3-tk\n"
+            "  2. Install Qt: pip install PyQt5\n"
+            "  3. Use non-interactive calibration with --calib-json\n\n"
+            "See BATHYMETRY_GUIDE.md for more details."
+        )
     
     logger.info("Starting interactive calibration...")
     logger.info("Click on ground control points in the image")
@@ -1007,9 +1043,37 @@ Note: If your filename contains spaces, enclose it in quotes:
         raise
     
     # Validate arguments
-    if args.interactive_calib and not MATPLOTLIB_AVAILABLE:
-        logger.error("Interactive calibration requires matplotlib")
-        sys.exit(1)
+    if args.interactive_calib:
+        if not MATPLOTLIB_AVAILABLE:
+            logger.error("Interactive calibration requires matplotlib")
+            logger.error("Install it with: pip install matplotlib")
+            sys.exit(1)
+        
+        # Check for headless environment early
+        import os
+        if 'DISPLAY' not in os.environ and os.name != 'nt':
+            logger.error("=" * 70)
+            logger.error("HEADLESS ENVIRONMENT DETECTED")
+            logger.error("=" * 70)
+            logger.error("")
+            logger.error("Interactive calibration requires a graphical display.")
+            logger.error("You are running in a headless environment (no DISPLAY set).")
+            logger.error("")
+            logger.error("Solutions:")
+            logger.error("  1. Use non-interactive calibration:")
+            logger.error("     - Create calibration.json file (see BATHYMETRY_GUIDE.md)")
+            logger.error("     - Run with: --calib-json calibration.json")
+            logger.error("")
+            logger.error("  2. Run on your local machine with a display")
+            logger.error("")
+            logger.error("  3. Enable X11 forwarding:")
+            logger.error("     ssh -X user@server")
+            logger.error("")
+            logger.error("  4. Use VNC or another remote desktop solution")
+            logger.error("")
+            logger.error("See BATHYMETRY_GUIDE.md for detailed instructions.")
+            logger.error("=" * 70)
+            sys.exit(1)
     
     # Setup
     ensure_dir(args.outdir)

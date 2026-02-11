@@ -671,6 +671,105 @@ Depth statistics:
 
 Only proceed with calibration **after** you see the window with the chart image.
 
+### Q: Error "Cannot load backend 'TkAgg'" or "headless environment detected" - what do I do?
+
+**A**: This means you're trying to use interactive calibration on a system without a graphical display (headless server, Docker container, SSH session, cloud VM, etc.).
+
+**Interactive calibration REQUIRES**:
+- A graphical desktop environment (Windows, macOS, Linux desktop)
+- Display capability (monitor or remote desktop)
+- GUI toolkit installed (Tk, Qt, or GTK)
+
+**Solutions**:
+
+1. **Use non-interactive calibration (RECOMMENDED for servers)**:
+   ```bash
+   # First, create calibration.json manually or on another machine
+   # See "Manual Calibration File Creation" section below
+   
+   # Then run with the calibration file:
+   python bathymetry_digitizer.py \
+     --input scan.pdf \
+     --outdir output \
+     --calib-json calibration.json
+   ```
+
+2. **Run on your local machine**:
+   - Download the PDF to your laptop/desktop
+   - Run the script locally where you have a display
+   - Upload the calibration.json to the server for future batch processing
+
+3. **Enable X11 forwarding** (Linux/macOS only):
+   ```bash
+   # Connect with X11 forwarding
+   ssh -X username@server
+   
+   # Set DISPLAY if needed
+   export DISPLAY=:0
+   
+   # Then run the script
+   python bathymetry_digitizer.py --input scan.pdf --outdir output --interactive-calib
+   ```
+
+4. **Use VNC or remote desktop**:
+   - Set up VNC server on the remote machine
+   - Connect with VNC client
+   - Run the script in the VNC session
+
+5. **Install GUI backend** (if you have a display but missing packages):
+   ```bash
+   # Ubuntu/Debian
+   sudo apt-get install python3-tk
+   # or
+   pip install PyQt5
+   ```
+
+**Checking your environment**:
+```bash
+# Check if DISPLAY is set (Linux/macOS)
+echo $DISPLAY
+# If empty or not set → headless
+
+# Check if you're on a server
+uname -n
+# If it's a cloud VM or server → probably headless
+```
+
+### Manual Calibration File Creation
+
+If you can't use interactive calibration, create `calibration.json` manually:
+
+```json
+{
+  "gcps": [
+    {"pixel": [100, 200], "real": [30000, 30000]},
+    {"pixel": [9500, 200], "real": [31000, 30000]},
+    {"pixel": [100, 12000], "real": [30000, 28800]},
+    {"pixel": [9500, 12000], "real": [31000, 28800]}
+  ],
+  "affine_matrix": [
+    [0.106, 0.0, 29989.4],
+    [0.0, -0.106, 30021.2]
+  ]
+}
+```
+
+**How to get the values**:
+1. Open the scanned PDF in any image viewer
+2. Identify 3-4 points with known coordinates (corner labels, grid intersections)
+3. Note the pixel coordinates (X, Y from top-left)
+4. Note the real-world coordinates (E, N in metres)
+5. Use an online affine transform calculator or create the matrix manually
+
+**System Requirements for Interactive Calibration**:
+- ✅ Windows, macOS, or Linux Desktop (not Server)
+- ✅ Active display/monitor
+- ✅ One of: python3-tk, PyQt5, PyGObject (GTK)
+- ❌ SSH session without X11 forwarding
+- ❌ Docker container (unless with X11 passthrough)
+- ❌ Cloud VM (unless with VNC/RDP)
+- ❌ GitHub Codespaces, AWS Cloud9, Google Colab
+
 ## Integration with GIS
 
 Import the XYZ file into GIS software:
