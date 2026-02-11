@@ -634,11 +634,7 @@ def calibrate_affine_interactive(image: np.ndarray) -> Tuple[np.ndarray, List[Di
     if not MATPLOTLIB_AVAILABLE:
         raise ImportError("matplotlib not available for interactive calibration")
     
-    # Detect if we're in a headless environment
-    import os
-    import sys
-    
-    # Check for headless (skip check on macOS which doesn't use DISPLAY)
+    # Detect if we're in a headless environment (skip check on macOS)
     if sys.platform != 'darwin' and 'DISPLAY' not in os.environ and os.name != 'nt':
         raise RuntimeError(
             "Interactive calibration requires a graphical display.\n"
@@ -1053,9 +1049,7 @@ Note: If your filename contains spaces, enclose it in quotes:
             sys.exit(1)
         
         # Check for headless environment early (skip check on macOS)
-        import os
-        import sys as sys_module
-        if sys_module.platform != 'darwin' and 'DISPLAY' not in os.environ and os.name != 'nt':
+        if sys.platform != 'darwin' and 'DISPLAY' not in os.environ and os.name != 'nt':
             logger.error("=" * 70)
             logger.error("HEADLESS ENVIRONMENT DETECTED")
             logger.error("=" * 70)
